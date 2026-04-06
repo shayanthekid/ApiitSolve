@@ -2,7 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, usePage, useForm, router } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
 
-export default function Show({ ticket }) {
+export default function Show({ ticket, staff = [] }) {
     const { auth } = usePage().props;
     const isStaff = auth.user.role === 'admin' || auth.user.role === 'it_agent';
 
@@ -169,6 +169,26 @@ export default function Show({ ticket }) {
                                         </button>
                                     )}
                                 </div>
+                                
+                                {auth.user.role === 'admin' && (
+                                    <div className="pt-3 border-t border-slate-200 mt-3">
+                                        <h3 className="text-xs font-semibold text-slate-800 uppercase mb-2">Assign Ticket</h3>
+                                        <select
+                                            className="block w-full rounded-md border-slate-300 shadow-sm focus:border-brand-500 focus:ring-brand-500 sm:text-sm text-slate-900"
+                                            value={ticket.assigned_to || ''}
+                                            onChange={(e) => {
+                                                router.patch(route('tickets.assign', ticket.id), { assigned_to: e.target.value || null }, { preserveScroll: true });
+                                            }}
+                                        >
+                                            <option value="">-- Unassigned --</option>
+                                            {staff.map(member => (
+                                                <option key={member.id} value={member.id}>
+                                                    {member.name} ({member.role === 'admin' ? 'Admin' : 'IT'})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

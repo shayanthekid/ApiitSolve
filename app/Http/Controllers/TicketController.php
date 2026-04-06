@@ -12,8 +12,10 @@ class TicketController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->isAdmin() || $user->isAgent()) {
+        if ($user->isAdmin()) {
             $tickets = Ticket::with('requester', 'agent')->latest()->get();
+        } elseif ($user->isAgent()) {
+            $tickets = Ticket::with('requester', 'agent')->where('assigned_to', $user->id)->latest()->get();
         } else {
             $tickets = $user->tickets()->with('agent')->latest()->get();
         }
@@ -52,15 +54,40 @@ class TicketController extends Controller
     public function show(Ticket $ticket)
     {
         $user = Auth::user();
-        if (!$user->isAdmin() && !$user->isAgent() && $ticket->user_id !== $user->id) {
+        
+        // Protect viewing restrictions
+        if ($user->isStudent() && $ticket->user_id !== $user->id) {
             abort(403);
+        } elseif ($user->isAgent() && $ticket->assigned_to !== $user->id) {
+            abort(403, 'Ticket is not assigned to you.');
         }
 
         $ticket->load(['requester', 'agent', 'replies.author']);
 
+        $staff = [];
+        if ($user->isAdmin()) {
+            $staff = \App\Models\User::whereIn('role', ['admin', 'it_agent'])->get(['id', 'name', 'role']);
+        }
+
         return Inertia::render('Tickets/Show', [
-            'ticket' => $ticket
+            'ticket' => $ticket,
+            'staff' => $staff
         ]);
+    }
+
+    public function assign(Request $request, Ticket $ticket)
+    {
+        if (!Auth::user()->isAdmin()) {
+            abort(403, 'Only admins can assign tickets.');
+        }
+
+        $validated = $request->validate([
+            'assigned_to' => 'nullable|exists:users,id'
+        ]);
+
+        $ticket->update(['assigned_to' => $validated['assigned_to']]);
+
+        return back()->with('success', 'Ticket assigned successfully.');
     }
 
     public function updateStatus(Request $request, Ticket $ticket)

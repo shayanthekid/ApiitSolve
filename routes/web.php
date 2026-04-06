@@ -24,6 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('tickets', TicketController::class);
     Route::post('tickets/{ticket}/replies', [TicketReplyController::class, 'store'])->name('replies.store');
     Route::patch('tickets/{ticket}/status', [TicketController::class, 'updateStatus'])->name('tickets.updateStatus');
+    Route::patch('tickets/{ticket}/assign', [TicketController::class, 'assign'])->name('tickets.assign');
 });
 
 Route::middleware('auth')->group(function () {
