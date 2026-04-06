@@ -66,7 +66,13 @@ class TicketController extends Controller
     public function updateStatus(Request $request, Ticket $ticket)
     {
         $user = Auth::user();
-        if (!$user->isAdmin() && !$user->isAgent()) {
+        
+        if ($user->isStudent()) {
+            // Students can only transition their own ticket to Open
+            if ($ticket->user_id !== $user->id || $request->status !== 'Open') {
+                abort(403);
+            }
+        } elseif (!$user->isAdmin() && !$user->isAgent()) {
             abort(403);
         }
 

@@ -22,6 +22,11 @@ export default function Dashboard({ tickets }) {
         }
     };
 
+    const resolvedCount = tickets.filter(t => t.status === 'Resolved').length;
+    const unresolvedCount = tickets.filter(t => t.status !== 'Resolved').length;
+    const highPriorityCount = tickets.filter(t => t.priority === 'High' && t.status !== 'Resolved').length;
+    const unassignedCount = tickets.filter(t => !t.agent && t.status !== 'Resolved').length;
+
     return (
         <AuthenticatedLayout
             header={
@@ -31,6 +36,50 @@ export default function Dashboard({ tickets }) {
             }
         >
             <Head title="Dashboard" />
+
+            {!isStudent && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between group hover:border-brand-300 transition-colors">
+                        <div>
+                            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Unresolved</p>
+                            <h3 className="text-3xl font-black text-slate-800 group-hover:text-brand-600 transition-colors">{unresolvedCount}</h3>
+                        </div>
+                        <div className="h-14 w-14 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                        </div>
+                    </div>
+                    
+                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between group hover:border-red-300 transition-colors">
+                        <div>
+                            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">High Priority</p>
+                            <h3 className="text-3xl font-black text-slate-800 group-hover:text-red-600 transition-colors">{highPriorityCount}</h3>
+                        </div>
+                        <div className="h-14 w-14 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between group hover:border-orange-300 transition-colors">
+                        <div>
+                            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Unassigned</p>
+                            <h3 className="text-3xl font-black text-slate-800 group-hover:text-orange-600 transition-colors">{unassignedCount}</h3>
+                        </div>
+                        <div className="h-14 w-14 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between group hover:border-green-300 transition-colors">
+                        <div>
+                            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Resolved</p>
+                            <h3 className="text-3xl font-black text-slate-800 group-hover:text-green-600 transition-colors">{resolvedCount}</h3>
+                        </div>
+                        <div className="h-14 w-14 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center transform group-hover:scale-110 transition-transform">
+                            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="bg-white shadow-sm border border-slate-200 sm:rounded-xl overflow-hidden">
                 <div className="overflow-x-auto">

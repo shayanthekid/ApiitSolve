@@ -80,7 +80,7 @@ export default function Show({ ticket }) {
                     </div>
 
                     {/* Reply Form */}
-                    {ticket.status !== 'Resolved' && (
+                    {ticket.status !== 'Resolved' ? (
                         <div className="bg-white shadow-sm border border-slate-200 sm:rounded-xl overflow-hidden mt-6">
                             <form onSubmit={submitReply}>
                                 <div className="p-4 border-b border-slate-100">
@@ -105,6 +105,22 @@ export default function Show({ ticket }) {
                                 </div>
                             </form>
                         </div>
+                    ) : (
+                        ticket.user_id === auth.user.id && (
+                            <div className="bg-white shadow-sm border border-slate-200 sm:rounded-xl overflow-hidden mt-6 p-8 text-center flex flex-col items-center justify-center">
+                                <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                                </div>
+                                <h3 className="text-lg font-semibold text-slate-900 mb-2">This ticket has been marked as resolved</h3>
+                                <p className="text-slate-500 mb-6 max-w-md">If you are still experiencing issues related to this request, you can reopen it to continue the conversation with the support team.</p>
+                                <button
+                                    onClick={() => changeStatus('Open')}
+                                    className="inline-flex justify-center items-center py-2 px-6 border border-slate-300 shadow-sm text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-all font-semibold"
+                                >
+                                    Reopen Ticket
+                                </button>
+                            </div>
+                        )
                     )}
                 </div>
 
